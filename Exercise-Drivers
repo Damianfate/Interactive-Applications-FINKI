@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="jquery/jquery-ui.css">
+    <script src="jquery/jquery.js"></script>
+    <script src="jquery/jquery-ui.js"></script>
+
+</head>
+<style>
+div{
+    display: inline-block;
+    border: 1px solid black;
+    vertical-align: top;
+}
+</style>
+<body>
+<h1>Formula 1 shampioni</h1>
+<div id="2016List">
+    <h3 id="2016" style="display: none; text-align: center">2016</h3>
+<ul id="popolni2016">
+
+</ul>
+</div>
+<div id="2017List">
+    <h3 id="2017" style="display: none; text-align: center">2016</h3>
+<ul id="popolni2017">
+
+</ul>
+</div>
+<div id="omileni">
+    <h3> Drag Your Favorite Drivers Here</h3>
+    <ul id="popolniOmileni">
+        <li>Povleci gi omilenite</li>
+    </ul>
+</div>
+<div id="dop_info">
+<p>Name: <span id="name"></span></p>
+<p>Nationality: <span id="nationality"></span></p>
+<p>Date: <span id="date"></span></p>
+    <a href="" id="link"></a>
+</div>
+<script>
+$(document).ready(function (){
+    function get_data(year){
+        $.ajax({
+            url:"http://ergast.com/api/f1/"+year+"/drivers.json",
+            dataType:"json",
+            success:function (data){
+                $.each(data.MRData.DriverTable.Drivers, function (i, item){
+                    let elemt=$("<li>").append((i+1)+". "+item.givenName+""+item.familyName)
+                    elemt.attr("nationality",item.nationality);
+                    elemt.attr("date", item.dateOfBirth);
+                    elemt.attr("url", item.url);
+                    elemt.appendTo("#popolni"+year)
+                })
+            }
+        })
+    }
+    get_data(2016)
+    get_data(2017)
+    $("#popolni2016,#popolni2017").sortable({
+        connectWith:"#popolniOmileni"
+    })
+    $("#popolniOmileni").sortable({
+        connectWith: "#popolni2016, #popolni2017"
+    })
+    $("#dop_info").hide()
+    $(document).on("click","#popolniOmileni li", function (){
+        $("#name").html($(this).html());
+        $("#nationality").html($(this).attr("nationality"))
+        $("#date").html($(this).attr("date"))
+        $("#link").attr("href",$(this).attr("url"))
+        $("#dop_info").show()
+    })
+})
+</script>
+</body>
+</html>
