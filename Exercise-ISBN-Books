@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="jquery/jquery-ui.structure.css">
+    <script src="jquery/jquery.js"></script>
+    <script src="jquery/jquery-ui.js"></script>
+</head>
+<style>
+    #details{
+        display: inline-block;
+        width: 200px;
+        vertical-align: top;
+    }
+</style>
+<body>
+<div>
+    <h1>Book App</h1>
+    <lable>ISBN:</lable> <input type="text" id="isbn"><span>10 or 13 digit number</span>
+</div>
+<button id="add">Add book</button>
+<ul id="books">
+
+</ul>
+<div id="details" style="display: none">
+    <h3 id="title">Title:</h3>
+    <p id="isbn_book">ISBN: </p>
+    <p id="Publ"> Publishers: </p>
+    <img src id="img">
+    <a href id="link"></a>
+</div>
+<script>
+$(document).ready(function (){
+    $("#add").click(function (){
+       let isbn=$("#isbn").val()
+       $.ajax({
+           url:"https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&jscmd=details",
+           dataType:"jsonp",
+           success:function (data){
+               console.log(data)
+               $("<li isbn='"+isbn+"' publishers='"+data["ISBN:"+isbn]["details"]["publishers"][0]+"' image='"+data["ISBN:"+isbn]["thumbnail_url"]+"' link='"+data["ISBN:"+isbn]["info_url"]+"'>"+data["ISBN:"+isbn]["details"]["title"]+"</li>").appendTo("#books")
+           }
+       })
+    })
+    $(document).on("click","#books li", function (){
+        $("#title").html($(this).html())
+        $("#isbn_book").html($(this).attr("isbn"))
+        $("#Publ").html($(this).attr("publishers"))
+        $("#img").attr("src", $(this).attr("image"))
+        $("#link").attr("href", $(this).attr("link"))
+        $("#details").show()
+    })
+})
+</script>
+</body>
+</html>
